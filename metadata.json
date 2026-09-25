@@ -1,0 +1,6 @@
+{
+  "name": "Vendôme Éditions Luxury Apparel & Commerce Suite",
+  "description": "High-fashion luxury apparel e-commerce store with an administrative management dashboard, dynamic catalog, WhatsApp orders, live tracking, and exportable PHP/MySQL architecture.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
