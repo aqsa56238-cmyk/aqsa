@@ -22,9 +22,18 @@ import { OrderTrackingModal } from './components/OrderTrackingModal';
 import { SearchModal } from './components/SearchModal';
 import { InvoiceModal } from './components/InvoiceModal';
 import { AdminLayout } from './components/admin/AdminLayout';
+import { PageView } from './components/PageView';
 
 const MainApp: React.FC = () => {
-  const { adminMode } = useStore();
+  const { adminMode, settings, activePage } = useStore();
+
+  React.useEffect(() => {
+    if (settings.pageTitle) {
+      document.title = settings.pageTitle;
+    } else if (settings.storeName) {
+      document.title = `${settings.storeName} | Haute Couture & Architectural Silhouettes`;
+    }
+  }, [settings.pageTitle, settings.storeName]);
 
   return (
     <div className="min-h-screen bg-[#FAF9F5] text-[#1A1A1A] flex flex-col font-sans selection:bg-[#2A2825] selection:text-[#FAF9F5]">
@@ -34,13 +43,19 @@ const MainApp: React.FC = () => {
         <div className="flex-1 flex flex-col">
           <Navbar />
           <main className="flex-1">
-            <Hero />
-            <CuratedArchetypes />
-            <CatalogSection />
-            <ManifestoSection />
-            <AtelierIconsSection />
-            <PrivateArchivesSection />
-            <ScenesDeVieSection />
+            {activePage === 'home' ? (
+              <>
+                <Hero />
+                <CuratedArchetypes />
+                <CatalogSection />
+                <ManifestoSection />
+                <AtelierIconsSection />
+                <PrivateArchivesSection />
+                <ScenesDeVieSection />
+              </>
+            ) : (
+              <PageView />
+            )}
           </main>
           <Footer />
         </div>

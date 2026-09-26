@@ -12,28 +12,63 @@ export const Navbar: React.FC = () => {
     setIsSearchOpen,
     setIsTrackingOpen,
     adminMode,
-    setAdminMode
+    setAdminMode,
+    activePage,
+    setActivePage,
+    pages
   } = useStore();
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [topBannerVisible, setTopBannerVisible] = useState(true);
 
   const handleNavClick = (slug: string) => {
-    setActiveCategory(slug);
-    setMobileMenuOpen(false);
-    const catalogEl = document.getElementById('catalog-section');
-    if (catalogEl) {
-      catalogEl.scrollIntoView({ behavior: 'smooth' });
+    const isCustomPage = pages.some(p => p.slug === slug);
+    if (isCustomPage) {
+      setActivePage(slug);
+      setMobileMenuOpen(false);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      setActivePage('home');
+      setActiveCategory(slug);
+      setMobileMenuOpen(false);
+      setTimeout(() => {
+        const catalogEl = document.getElementById('catalog-section');
+        if (catalogEl) {
+          catalogEl.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 50);
     }
   };
+
+  // Combine enabled navLinks with any custom pages marked showInNav
+  const navigationItems = React.useMemo(() => {
+    const defaultLinks = settings.navLinks && settings.navLinks.length > 0
+      ? settings.navLinks.filter(l => l.enabled)
+      : [
+          { id: '1', label: 'Collection', slug: 'all', enabled: true },
+          { id: '2', label: 'Outerwear', slug: 'outerwear', enabled: true },
+          { id: '3', label: 'Tailoring', slug: 'tailoring', enabled: true },
+          { id: '4', label: 'Cashmere', slug: 'knitwear', enabled: true },
+          { id: '5', label: 'Leather Goods', slug: 'leather-goods', enabled: true },
+          { id: '6', label: 'Men', slug: 'men', enabled: true },
+        ];
+
+    // Append pages marked showInNav that aren't already in defaultLinks
+    const navSlugs = new Set(defaultLinks.map(l => l.slug));
+    const extraPages = pages
+      .filter(p => p.showInNav && !navSlugs.has(p.slug))
+      .map(p => ({ id: p.id, label: p.navLabel || p.title, slug: p.slug, enabled: true }));
+
+    return [...defaultLinks, ...extraPages];
+  }, [settings.navLinks, pages]);
 
   return (
     <header className="sticky top-0 z-40 bg-[#FAF9F5]/95 backdrop-blur-md border-b border-[#E8E5DD] transition-all">
       {/* Top Privilege Announcement Bar */}
-      {topBannerVisible && (
+      {topBannerVisible && settings.showAnnouncement !== false && (
         <div className="bg-[#1C1B19] text-[#EFECE6] text-[11px] font-sans tracking-[0.16em] uppercase py-2 px-4 flex items-center justify-between text-center relative border-b border-[#2E2C29]">
           <div className="flex-1 text-center font-medium">
-            COMPLIMENTARY WHITE-GLOVE WORLDWIDE DELIVERY ON ORDERS OVER {settings.currencySymbol}{settings.freeShippingThreshold} &bull; PRIVATE SALON APPOINTMENTS PARIS &bull; NEW YORK
+            {settings.announcementText || `COMPLIMENTARY WHITE-GLOVE WORLDWIDE DELIVERY ON ORDERS OVER ${settings.currencySymbol}${settings.freeShippingThreshold} • PRIVATE SALON APPOINTMENTS PARIS • NEW YORK`}
           </div>
           <button
             onClick={() => setTopBannerVisible(false)}
@@ -58,58 +93,50 @@ export const Navbar: React.FC = () => {
           </button>
         </div>
 
-        {/* Zone 1: Single Brand Wordmark in High-Contrast Display Serif */}
+        {/* Zone 1: Brand Wordmark or Uploaded Cloudinary Logo */}
         <div className="flex items-center">
           <a
             href="#"
             onClick={(e) => {
               e.preventDefault();
+              setActivePage('home');
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
-            className="font-serif text-2xl sm:text-3xl font-normal tracking-[0.18em] uppercase text-[#141413] hover:opacity-85 transition-opacity"
+            className="flex items-center hover:opacity-85 transition-opacity"
           >
-            {settings.storeName}
+            {settings.logoImage ? (
+              <img
+                src={settings.logoImage}
+                alt={settings.storeName}
+                className="h-9 sm:h-11 w-auto object-contain"
+                referrerPolicy="no-referrer"
+              />
+            ) : (
+              <span className="font-serif text-2xl sm:text-3xl font-normal tracking-[0.18em] uppercase text-[#141413]">
+                {settings.logoText || settings.storeName}
+              </span>
+            )}
           </a>
         </div>
 
-        {/* Zone 2: 4-6 Clean Text Navigation Links */}
+        {/* Zone 2: Dynamic Page / Category Navigation Links */}
         <nav className="hidden lg:flex items-center space-x-7 text-[12px] font-medium tracking-[0.15em] uppercase text-[#4A4742]">
-          <button
-            onClick={() => handleNavClick('all')}
-            className="hover:text-[#111110] transition-colors py-1 hover:border-b hover:border-[#111110]"
-          >
-            Collection
-          </button>
-          <button
-            onClick={() => handleNavClick('outerwear')}
-            className="hover:text-[#111110] transition-colors py-1 hover:border-b hover:border-[#111110]"
-          >
-            Outerwear
-          </button>
-          <button
-            onClick={() => handleNavClick('tailoring')}
-            className="hover:text-[#111110] transition-colors py-1 hover:border-b hover:border-[#111110]"
-          >
-            Tailoring
-          </button>
-          <button
-            onClick={() => handleNavClick('knitwear')}
-            className="hover:text-[#111110] transition-colors py-1 hover:border-b hover:border-[#111110]"
-          >
-            Cashmere
-          </button>
-          <button
-            onClick={() => handleNavClick('leather-goods')}
-            className="hover:text-[#111110] transition-colors py-1 hover:border-b hover:border-[#111110]"
-          >
-            Leather Goods
-          </button>
-          <button
-            onClick={() => handleNavClick('men')}
-            className="hover:text-[#111110] transition-colors py-1 hover:border-b hover:border-[#111110]"
-          >
-            Men
-          </button>
+          {navigationItems.map((link) => {
+            const isActive = activePage === link.slug || (activePage === 'home' && link.slug === 'all');
+            return (
+              <button
+                key={link.id}
+                onClick={() => handleNavClick(link.slug)}
+                className={`transition-colors py-1 ${
+                  isActive
+                    ? 'text-black font-semibold border-b-2 border-black'
+                    : 'hover:text-[#111110] hover:border-b hover:border-[#111110]'
+                }`}
+              >
+                {link.label}
+              </button>
+            );
+          })}
         </nav>
 
         {/* Zone 3: Primary Actions (Search, Tracking, Wishlist, Bag, Admin Mode) */}
@@ -183,48 +210,17 @@ export const Navbar: React.FC = () => {
       {mobileMenuOpen && (
         <div className="lg:hidden border-t border-[#E8E5DD] bg-[#FAF9F5] px-6 py-6 space-y-4">
           <div className="flex flex-col space-y-3 text-sm font-medium tracking-[0.14em] uppercase text-[#2A2825]">
-            <button
-              onClick={() => handleNavClick('all')}
-              className="text-left py-1 hover:text-black border-b border-[#ECE9E1]"
-            >
-              Full Collection
-            </button>
-            <button
-              onClick={() => handleNavClick('outerwear')}
-              className="text-left py-1 hover:text-black border-b border-[#ECE9E1]"
-            >
-              Outerwear & Capes
-            </button>
-            <button
-              onClick={() => handleNavClick('tailoring')}
-              className="text-left py-1 hover:text-black border-b border-[#ECE9E1]"
-            >
-              Ready to Wear Tailoring
-            </button>
-            <button
-              onClick={() => handleNavClick('knitwear')}
-              className="text-left py-1 hover:text-black border-b border-[#ECE9E1]"
-            >
-              Knitwear & Cashmere
-            </button>
-            <button
-              onClick={() => handleNavClick('leather-goods')}
-              className="text-left py-1 hover:text-black border-b border-[#ECE9E1]"
-            >
-              Leather Goods & Objet
-            </button>
-            <button
-              onClick={() => handleNavClick('men')}
-              className="text-left py-1 hover:text-black border-b border-[#ECE9E1]"
-            >
-              Men's Collection
-            </button>
-            <button
-              onClick={() => handleNavClick('kids')}
-              className="text-left py-1 hover:text-black border-b border-[#ECE9E1]"
-            >
-              Petits Héritiers (Kids)
-            </button>
+            {navigationItems.map((link) => (
+              <button
+                key={link.id}
+                onClick={() => handleNavClick(link.slug)}
+                className={`text-left py-1 border-b border-[#ECE9E1] transition-colors ${
+                  activePage === link.slug ? 'text-black font-bold' : 'hover:text-black'
+                }`}
+              >
+                {link.label}
+              </button>
+            ))}
             <button
               onClick={() => {
                 setIsTrackingOpen(true);

@@ -7,6 +7,8 @@ import { AdminCategories } from './AdminCategories';
 import { AdminCustomers } from './AdminCustomers';
 import { AdminSettings } from './AdminSettings';
 import { AdminPhpExport } from './AdminPhpExport';
+import { AdminPages } from './AdminPages';
+import { CloudinaryMediaHub } from './CloudinaryMediaHub';
 import {
   LayoutDashboard,
   Package,
@@ -21,7 +23,9 @@ import {
   Menu,
   X,
   Lock,
-  ArrowRight
+  ArrowRight,
+  FileText,
+  Cloud
 } from 'lucide-react';
 
 export const AdminLayout: React.FC = () => {
@@ -59,7 +63,9 @@ export const AdminLayout: React.FC = () => {
     { id: 'categories', label: 'Categories', icon: Layers, badge: null },
     { id: 'orders', label: 'Orders', icon: ShoppingBag, badge: pendingOrdersCount > 0 ? `${pendingOrdersCount}` : null },
     { id: 'customers', label: 'Customers', icon: Users, badge: null },
-    { id: 'settings', label: 'Website Settings', icon: Settings, badge: null },
+    { id: 'pages', label: 'Page Names & Content', icon: FileText, badge: 'Live' },
+    { id: 'settings', label: 'Website Details', icon: Settings, badge: null },
+    { id: 'media', label: 'Cloudinary Media Hub', icon: Cloud, badge: 'kkroq7e1' },
     { id: 'phpexport', label: 'PHP / MySQL Stack', icon: Database, badge: 'PHP 8' },
   ];
 
@@ -151,6 +157,10 @@ export const AdminLayout: React.FC = () => {
             </span>
             <span className="bg-[#2D2A26] text-[#D8D2C5] text-[10px] font-mono uppercase px-2 py-0.5 border border-[#423E37]">
               ADMIN SUITE
+            </span>
+            <span className="hidden lg:flex items-center gap-1.5 bg-[#1F2E23] text-[#A3E4B5] text-[10px] font-mono uppercase px-2 py-0.5 border border-[#2B4E33]">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              Cloudinary: kkroq7e1
             </span>
           </div>
         </div>
@@ -265,10 +275,12 @@ export const AdminLayout: React.FC = () => {
         <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto max-w-7xl mx-auto w-full">
           {adminTab === 'dashboard' && <AdminDashboard />}
           {adminTab === 'products' && <AdminProducts />}
-          {adminTab === 'orders' && <AdminOrders />}
           {adminTab === 'categories' && <AdminCategories />}
+          {adminTab === 'orders' && <AdminOrders />}
           {adminTab === 'customers' && <AdminCustomers />}
+          {adminTab === 'pages' && <AdminPages />}
           {adminTab === 'settings' && <AdminSettings />}
+          {adminTab === 'media' && <CloudinaryMediaHub />}
           {adminTab === 'phpexport' && <AdminPhpExport />}
         </main>
       </div>

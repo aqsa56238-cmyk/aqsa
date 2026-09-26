@@ -5,28 +5,33 @@ import { ArrowUpRight } from 'lucide-react';
 export const ScenesDeVieSection: React.FC = () => {
   const { settings } = useStore();
 
-  const scenes = [
+  const scenes = settings.scenesGallery && settings.scenesGallery.length > 0 ? settings.scenesGallery : [
     {
+      id: "1",
       image: "/src/assets/images/hero_luxury_coat_1790325188738.jpg",
       title: "Place Vendôme Colonnes",
       location: "Paris 1er"
     },
     {
+      id: "2",
       image: "/src/assets/images/cat_outerwear_cape_1790325209241.jpg",
       title: "Salon Privé Fitting",
       location: "Rue Saint-Honoré"
     },
     {
+      id: "3",
       image: "/src/assets/images/cat_tailored_suit_1790325225628.jpg",
       title: "Hourglass Precision",
       location: "Atelier Central"
     },
     {
+      id: "4",
       image: "/src/assets/images/cat_leather_bag_1790325239933.jpg",
       title: "The Opéra Box Calfskin",
       location: "Faubourg"
     },
     {
+      id: "5",
       image: "/src/assets/images/cat_knitwear_cashmere_1790325254062.jpg",
       title: "Tactile Cashmere Rib",
       location: "Biella Mills"
@@ -40,10 +45,10 @@ export const ScenesDeVieSection: React.FC = () => {
         <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
           <div>
             <span className="text-[11px] font-mono tracking-[0.2em] uppercase text-[#736E66] block mb-2">
-              RUNWAY & DIARY
+              {settings.scenesKicker || 'RUNWAY & DIARY'}
             </span>
             <h2 className="font-serif text-2xl sm:text-3xl text-[#141413] font-light">
-              Scènes de Vie &bull; {settings.instagramHandle}
+              {settings.scenesTitle || 'Scènes de Vie'} &bull; {settings.instagramHandle}
             </h2>
           </div>
           <a
@@ -52,7 +57,7 @@ export const ScenesDeVieSection: React.FC = () => {
             rel="noreferrer"
             className="text-xs font-mono tracking-[0.16em] uppercase text-[#47433C] hover:text-black flex items-center gap-1 group self-start sm:self-end"
           >
-            <span>Follow The Maison</span>
+            <span>{settings.scenesFollowText || 'Follow The Maison'}</span>
             <ArrowUpRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
           </a>
         </div>

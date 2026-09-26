@@ -29,15 +29,15 @@ export const PrivateArchivesSection: React.FC = () => {
 
           <div className="relative z-10 max-w-2xl">
             <span className="text-[10px] font-mono tracking-[0.25em] text-[#C9C3B6] uppercase block mb-3">
-              EXCLUSIVE PATRON PRIVILEGE
+              {settings.archivesKicker || 'EXCLUSIVE PATRON PRIVILEGE'}
             </span>
 
             <h2 className="font-serif text-2xl sm:text-4xl font-light text-white mb-4 leading-tight">
-              The Private Archives &bull; Bespoke Monogramming
+              {settings.archivesTitle || 'The Private Archives • Bespoke Monogramming'}
             </h2>
 
             <p className="text-xs sm:text-sm text-[#BDB7AA] font-light leading-relaxed mb-8">
-              Through the season, patrons ordering any piece from our Cashmeres & Tailoring collections receive complimentary hand-embroidered silk monogramming in our Paris atelier.
+              {settings.archivesText || 'Through the season, patrons ordering any piece from our Cashmeres & Tailoring collections receive complimentary hand-embroidered silk monogramming in our Paris atelier.'}
             </p>
 
             <div className="flex flex-wrap items-center gap-4">
@@ -51,12 +51,12 @@ export const PrivateArchivesSection: React.FC = () => {
                   onClick={handleRequestAccess}
                   className="px-6 py-3.5 bg-[#FAF9F5] text-[#141413] text-xs font-mono uppercase tracking-[0.2em] hover:bg-[#EAE5D8] transition-colors"
                 >
-                  REQUEST ARCHIVE ACCESS
+                  {settings.archivesButtonText || 'REQUEST ARCHIVE ACCESS'}
                 </button>
               )}
 
               <span className="text-[11px] font-mono tracking-widest uppercase text-[#968F83]">
-                BY PRIVATE INVITATION OR PATRON REFERENCE
+                {settings.archivesNote || 'BY PRIVATE INVITATION OR PATRON REFERENCE'}
               </span>
             </div>
           </div>

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useStore } from '../../context/StoreContext';
 import { Category } from '../../types';
-import { Plus, Edit2, Trash2, X, Image as ImageIcon } from 'lucide-react';
+import { Plus, Edit2, Trash2, X, Image as ImageIcon, Cloud } from 'lucide-react';
+import { CloudinaryUploader } from './CloudinaryUploader';
 
 export const AdminCategories: React.FC = () => {
   const {
@@ -200,14 +201,31 @@ export const AdminCategories: React.FC = () => {
               </div>
 
               <div>
-                <label className="text-[11px] font-mono uppercase text-[#666] block mb-1">
-                  Category Showcase Image URL *
-                </label>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="text-[11px] font-mono uppercase text-[#666] block">
+                    Category Showcase Image
+                  </label>
+                  <span className="text-[10px] font-mono text-[#295438] bg-[#EAF3EC] px-2 py-0.5 font-semibold">
+                    Cloudinary CDN (kkroq7e1)
+                  </span>
+                </div>
+
+                <div className="mb-2">
+                  <CloudinaryUploader
+                    folder="vendome_store/categories"
+                    label="Upload Category Image to Cloudinary (kkroq7e1)"
+                    onUploadSuccess={(url) => {
+                      setFormData(prev => ({ ...prev, image: url }));
+                    }}
+                  />
+                </div>
+
                 <input
                   type="text"
                   required
                   value={formData.image}
                   onChange={(e) => setFormData({ ...formData, image: e.target.value })}
+                  placeholder="Or enter image URL"
                   className="w-full px-3 py-2 bg-white border border-[#DDD8CD] focus:outline-none focus:border-black text-xs font-mono"
                 />
               </div>

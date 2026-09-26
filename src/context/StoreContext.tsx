@@ -1,12 +1,25 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { Product, Category, Order, Customer, WebsiteSettings, CartItem, OrderStatus } from '../types';
-import { initialProducts, initialCategories, initialOrders, initialCustomers, initialSettings } from '../data/initialData';
+import { Product, Category, Order, Customer, WebsiteSettings, CartItem, OrderStatus, StorePage, MediaAsset } from '../types';
+import { initialProducts, initialCategories, initialOrders, initialCustomers, initialSettings, initialPages } from '../data/initialData';
 
 interface StoreContextType {
   // Store Settings
   settings: WebsiteSettings;
   updateSettings: (newSettings: Partial<WebsiteSettings>) => void;
   resetToDefaults: () => void;
+
+  // Pages & Navigation Controller
+  pages: StorePage[];
+  activePage: string; // 'home' or page slug
+  setActivePage: (slug: string) => void;
+  addPage: (page: Omit<StorePage, 'id' | 'updatedAt'>) => void;
+  updatePage: (id: string, updates: Partial<StorePage>) => void;
+  deletePage: (id: string) => void;
+
+  // Cloudinary Media Library Assets
+  mediaAssets: MediaAsset[];
+  addMediaAsset: (asset: Omit<MediaAsset, 'id' | 'uploadedAt'>) => void;
+  deleteMediaAsset: (id: string) => void;
 
   // Products
   products: Product[];
@@ -66,8 +79,8 @@ interface StoreContextType {
   // Admin View
   adminMode: boolean;
   setAdminMode: (mode: boolean) => void;
-  adminTab: 'dashboard' | 'products' | 'categories' | 'orders' | 'customers' | 'settings' | 'phpexport';
-  setAdminTab: (tab: 'dashboard' | 'products' | 'categories' | 'orders' | 'customers' | 'settings' | 'phpexport') => void;
+  adminTab: 'dashboard' | 'products' | 'categories' | 'orders' | 'customers' | 'pages' | 'settings' | 'media' | 'phpexport';
+  setAdminTab: (tab: 'dashboard' | 'products' | 'categories' | 'orders' | 'customers' | 'pages' | 'settings' | 'media' | 'phpexport') => void;
 }
 
 const StoreContext = createContext<StoreContextType | undefined>(undefined);
@@ -77,7 +90,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [settings, setSettings] = useState<WebsiteSettings>(() => {
     try {
       const saved = localStorage.getItem('vendome_settings');
-      return saved ? JSON.parse(saved) : initialSettings;
+      return saved ? { ...initialSettings, ...JSON.parse(saved) } : initialSettings;
     } catch {
       return initialSettings;
     }
@@ -100,6 +113,69 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       return saved ? JSON.parse(saved) : initialCategories;
     } catch {
       return initialCategories;
+    }
+  });
+
+  // Persistent Custom Pages
+  const [pages, setPages] = useState<StorePage[]>(() => {
+    try {
+      const saved = localStorage.getItem('vendome_pages');
+      return saved ? JSON.parse(saved) : initialPages;
+    } catch {
+      return initialPages;
+    }
+  });
+
+  const initialMedia: MediaAsset[] = [
+    {
+      id: 'media-1',
+      name: 'Paris Place Vendôme Trench Coat',
+      url: '/src/assets/images/hero_luxury_coat_1790325188738.jpg',
+      folder: 'vendome_store/banners',
+      format: 'jpg',
+      uploadedAt: '2026-09-25T10:00:00Z'
+    },
+    {
+      id: 'media-2',
+      name: 'Double-Faced Cashmere Cloak',
+      url: '/src/assets/images/cat_outerwear_cape_1790325209241.jpg',
+      folder: 'vendome_store/categories',
+      format: 'jpg',
+      uploadedAt: '2026-09-25T10:05:00Z'
+    },
+    {
+      id: 'media-3',
+      name: 'Architectural Hourglass Tailoring',
+      url: '/src/assets/images/cat_tailored_suit_1790325225628.jpg',
+      folder: 'vendome_store/categories',
+      format: 'jpg',
+      uploadedAt: '2026-09-25T10:10:00Z'
+    },
+    {
+      id: 'media-4',
+      name: 'The Opéra Structured Calfskin Box Tote',
+      url: '/src/assets/images/cat_leather_bag_1790325239933.jpg',
+      folder: 'vendome_store/products',
+      format: 'jpg',
+      uploadedAt: '2026-09-25T10:15:00Z'
+    },
+    {
+      id: 'media-5',
+      name: 'Tactile Ribbed Cashmere Knit',
+      url: '/src/assets/images/cat_knitwear_cashmere_1790325254062.jpg',
+      folder: 'vendome_store/brand',
+      format: 'jpg',
+      uploadedAt: '2026-09-25T10:20:00Z'
+    }
+  ];
+
+  // Persistent Cloudinary Media Assets Library
+  const [mediaAssets, setMediaAssets] = useState<MediaAsset[]>(() => {
+    try {
+      const saved = localStorage.getItem('vendome_media_assets');
+      return saved ? JSON.parse(saved) : initialMedia;
+    } catch {
+      return initialMedia;
     }
   });
 
@@ -144,6 +220,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   });
 
   // UI state
+  const [activePage, setActivePage] = useState<string>('home');
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [activeCategory, setActiveCategory] = useState<string>('all');
@@ -156,7 +233,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   // Admin state
   const [adminMode, setAdminMode] = useState<boolean>(false);
-  const [adminTab, setAdminTab] = useState<'dashboard' | 'products' | 'categories' | 'orders' | 'customers' | 'settings' | 'phpexport'>('dashboard');
+  const [adminTab, setAdminTab] = useState<'dashboard' | 'products' | 'categories' | 'orders' | 'customers' | 'pages' | 'settings' | 'media' | 'phpexport'>('dashboard');
 
   // Sync to localStorage
   useEffect(() => {
@@ -166,6 +243,22 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       console.warn('Could not save settings', e);
     }
   }, [settings]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('vendome_pages', JSON.stringify(pages));
+    } catch (e) {
+      console.warn('Could not save pages', e);
+    }
+  }, [pages]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('vendome_media_assets', JSON.stringify(mediaAssets));
+    } catch (e) {
+      console.warn('Could not save mediaAssets', e);
+    }
+  }, [mediaAssets]);
 
   useEffect(() => {
     try {
@@ -226,6 +319,8 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     setCategories(initialCategories);
     setOrders(initialOrders);
     setCustomers(initialCustomers);
+    setPages(initialPages);
+    setMediaAssets(initialMedia);
     localStorage.clear();
   };
 
@@ -274,6 +369,41 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const deleteCategory = (id: string) => {
     setCategories(prev => prev.filter(c => c.id !== id));
+  };
+
+  // Custom Pages & Navigation Controller
+  const addPage = (newPage: Omit<StorePage, 'id' | 'updatedAt'>) => {
+    const id = `page-${Date.now()}`;
+    const page: StorePage = {
+      ...newPage,
+      id,
+      updatedAt: new Date().toISOString()
+    };
+    setPages(prev => [...prev, page]);
+  };
+
+  const updatePage = (id: string, updates: Partial<StorePage>) => {
+    setPages(prev =>
+      prev.map(p => (p.id === id ? { ...p, ...updates, updatedAt: new Date().toISOString() } : p))
+    );
+  };
+
+  const deletePage = (id: string) => {
+    setPages(prev => prev.filter(p => p.id !== id));
+  };
+
+  // Cloudinary Media Asset Registry
+  const addMediaAsset = (asset: Omit<MediaAsset, 'id' | 'uploadedAt'>) => {
+    const item: MediaAsset = {
+      ...asset,
+      id: `media-${Date.now()}`,
+      uploadedAt: new Date().toISOString()
+    };
+    setMediaAssets(prev => [item, ...prev]);
+  };
+
+  const deleteMediaAsset = (id: string) => {
+    setMediaAssets(prev => prev.filter(m => m.id !== id));
   };
 
   const createOrder = (orderData: Omit<Order, 'id' | 'createdAt' | 'status' | 'paymentStatus'>) => {
@@ -412,6 +542,15 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         settings,
         updateSettings,
         resetToDefaults,
+        pages,
+        activePage,
+        setActivePage,
+        addPage,
+        updatePage,
+        deletePage,
+        mediaAssets,
+        addMediaAsset,
+        deleteMediaAsset,
         products,
         addProduct,
         updateProduct,

@@ -4,7 +4,7 @@ import { ProductCard } from './ProductCard';
 import { Filter, ArrowUpDown, Search, RotateCcw } from 'lucide-react';
 
 export const CatalogSection: React.FC = () => {
-  const { products, activeCategory, setActiveCategory } = useStore();
+  const { products, activeCategory, setActiveCategory, settings } = useStore();
   const [searchFilter, setSearchFilter] = useState('');
   const [sortBy, setSortBy] = useState<'featured' | 'price-asc' | 'price-desc' | 'newest'>('featured');
   const [onlyInStock, setOnlyInStock] = useState(false);
@@ -71,10 +71,10 @@ export const CatalogSection: React.FC = () => {
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-6 border-b border-[#E5E0D5] pb-6">
           <div>
             <span className="text-[11px] font-mono tracking-[0.2em] uppercase text-[#757067] block mb-2">
-              AUTUMN SELECTION 2026
+              {settings.catalogKicker || 'AUTUMN SELECTION 2026'}
             </span>
             <h2 className="font-serif text-3xl sm:text-4xl text-[#141413] font-light">
-              New Arrivals & Permanent Atelier
+              {settings.catalogTitle || 'New Arrivals & Permanent Atelier'}
             </h2>
           </div>
 

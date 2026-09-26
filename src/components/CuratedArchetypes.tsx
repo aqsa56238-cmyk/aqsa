@@ -3,7 +3,7 @@ import { useStore } from '../context/StoreContext';
 import { ArrowUpRight } from 'lucide-react';
 
 export const CuratedArchetypes: React.FC = () => {
-  const { categories, setActiveCategory } = useStore();
+  const { categories, setActiveCategory, settings } = useStore();
 
   const handleSelectCategory = (slug: string) => {
     setActiveCategory(slug);
@@ -20,17 +20,17 @@ export const CuratedArchetypes: React.FC = () => {
         <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-12 gap-4">
           <div>
             <span className="text-[11px] font-mono tracking-[0.2em] uppercase text-[#736E66] block mb-2">
-              ARCHITECTURAL TAXONOMY
+              {settings.archetypesKicker || 'ARCHITECTURAL TAXONOMY'}
             </span>
             <h2 className="font-serif text-3xl sm:text-4xl text-[#141413] font-light">
-              Curated Archetypes
+              {settings.archetypesTitle || 'Curated Archetypes'}
             </h2>
           </div>
           <button
             onClick={() => handleSelectCategory('all')}
             className="text-xs font-mono tracking-[0.15em] uppercase text-[#3A3834] hover:text-black flex items-center gap-1 group self-start sm:self-end"
           >
-            <span>View Complete Index</span>
+            <span>{settings.archetypesButtonText || 'View Complete Index'}</span>
             <ArrowUpRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
           </button>
         </div>

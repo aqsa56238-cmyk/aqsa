@@ -61,13 +61,13 @@ export const Hero: React.FC = () => {
                 onClick={handleExplore}
                 className="px-7 py-3.5 bg-white text-[#181816] text-xs font-medium tracking-[0.2em] uppercase hover:bg-[#EAE6DD] transition-all duration-200"
               >
-                {settings.heroCtaText}
+                {settings.heroCtaText || 'EXPLORE COLLECTION'}
               </button>
               <button
                 onClick={handleManifesto}
                 className="px-6 py-3.5 border border-white/40 text-white text-xs font-medium tracking-[0.2em] uppercase hover:bg-white/10 hover:border-white transition-all duration-200 flex items-center gap-2"
               >
-                <span>Read The Monograph</span>
+                <span>{settings.heroSecondaryCtaText || 'Read The Monograph'}</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </button>
             </div>
@@ -77,8 +77,8 @@ export const Hero: React.FC = () => {
         {/* Bottom Editorial Coordinates Strip */}
         <div className="absolute bottom-4 left-0 right-0 z-10 hidden md:block">
           <div className="max-w-7xl mx-auto px-6 lg:px-12 flex items-center justify-between text-[11px] font-mono tracking-[0.16em] uppercase text-[#C4BEB2]/80">
-            <div>N° 04 &bull; PLACE VENDÔME, SALON PRIVÉ, PARIS 1er</div>
-            <div>AUTUMN / WINTER EDITION 2026</div>
+            <div>{settings.heroCoordinates || 'N° 04 • PLACE VENDÔME, SALON PRIVÉ, PARIS 1er'}</div>
+            <div>{settings.heroEdition || 'AUTUMN / WINTER EDITION 2026'}</div>
           </div>
         </div>
       </div>
@@ -91,8 +91,8 @@ export const Hero: React.FC = () => {
               <Sparkles className="w-4 h-4 stroke-[1.5]" />
             </div>
             <div>
-              <h2 className="text-xs font-semibold tracking-wider uppercase text-white">White-Glove Courier</h2>
-              <p className="text-[11px] text-[#A6A095] mt-1 leading-snug">Worldwide carbon-neutral transit & insured bespoke delivery.</p>
+              <h2 className="text-xs font-semibold tracking-wider uppercase text-white">{settings.privilege1Title || 'White-Glove Courier'}</h2>
+              <p className="text-[11px] text-[#A6A095] mt-1 leading-snug">{settings.privilege1Desc || 'Worldwide carbon-neutral transit & insured bespoke delivery.'}</p>
             </div>
           </div>
 
@@ -101,8 +101,8 @@ export const Hero: React.FC = () => {
               <Scissors className="w-4 h-4 stroke-[1.5]" />
             </div>
             <div>
-              <h2 className="text-xs font-semibold tracking-wider uppercase text-white">Atelier Alterations</h2>
-              <p className="text-[11px] text-[#A6A095] mt-1 leading-snug">Complimentary tailoring in Paris, London & New York salons.</p>
+              <h2 className="text-xs font-semibold tracking-wider uppercase text-white">{settings.privilege2Title || 'Atelier Alterations'}</h2>
+              <p className="text-[11px] text-[#A6A095] mt-1 leading-snug">{settings.privilege2Desc || 'Complimentary tailoring in Paris, London & New York salons.'}</p>
             </div>
           </div>
 
@@ -111,8 +111,8 @@ export const Hero: React.FC = () => {
               <ShieldCheck className="w-4 h-4 stroke-[1.5]" />
             </div>
             <div>
-              <h2 className="text-xs font-semibold tracking-wider uppercase text-white">Lifetime Preservation</h2>
-              <p className="text-[11px] text-[#A6A095] mt-1 leading-snug">Annual cashmere de-pilling & leather conditioning guarantee.</p>
+              <h2 className="text-xs font-semibold tracking-wider uppercase text-white">{settings.privilege3Title || 'Lifetime Preservation'}</h2>
+              <p className="text-[11px] text-[#A6A095] mt-1 leading-snug">{settings.privilege3Desc || 'Annual cashmere de-pilling & leather conditioning guarantee.'}</p>
             </div>
           </div>
 
@@ -121,8 +121,8 @@ export const Hero: React.FC = () => {
               <PhoneCall className="w-4 h-4 stroke-[1.5]" />
             </div>
             <div>
-              <h2 className="text-xs font-semibold tracking-wider uppercase text-white">Private Concierge</h2>
-              <p className="text-[11px] text-[#A6A095] mt-1 leading-snug">Direct stylist consultation & salon fitting appointments.</p>
+              <h2 className="text-xs font-semibold tracking-wider uppercase text-white">{settings.privilege4Title || 'Private Concierge'}</h2>
+              <p className="text-[11px] text-[#A6A095] mt-1 leading-snug">{settings.privilege4Desc || 'Direct stylist consultation & salon fitting appointments.'}</p>
             </div>
           </div>
         </div>

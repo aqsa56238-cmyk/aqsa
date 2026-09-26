@@ -3,7 +3,7 @@ import { useStore } from '../context/StoreContext';
 import { Mail, Instagram, MapPin, Check } from 'lucide-react';
 
 export const Footer: React.FC = () => {
-  const { settings, setActiveCategory, setIsTrackingOpen } = useStore();
+  const { settings, setActiveCategory, setIsTrackingOpen, setActivePage, pages } = useStore();
   const [newsletterEmail, setNewsletterEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
 
@@ -19,10 +19,18 @@ export const Footer: React.FC = () => {
   };
 
   const handleCategoryClick = (slug: string) => {
+    setActivePage('home');
     setActiveCategory(slug);
     const cat = document.getElementById('catalog-section');
     cat?.scrollIntoView({ behavior: 'smooth' });
   };
+
+  const handlePageClick = (slug: string) => {
+    setActivePage(slug);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const footerPages = pages.filter(p => p.showInFooter);
 
   return (
     <footer className="bg-[#FAF9F5] text-[#222] border-t border-[#E8E5DD] pt-16 pb-12 font-sans">
@@ -34,7 +42,7 @@ export const Footer: React.FC = () => {
               {settings.storeName}
             </h3>
             <p className="text-xs text-[#5D5850] font-light leading-relaxed max-w-sm">
-              Architectural silhouettes and artisanal savoir-faire crafted in our Parisian atelier. Silent luxury conceived for enduring aesthetic permanence.
+              {settings.footerDescription || 'Architectural silhouettes and artisanal savoir-faire crafted in our Parisian atelier. Silent luxury conceived for enduring aesthetic permanence.'}
             </p>
 
             <div className="flex items-center gap-3 pt-2 text-[#4A4741]">
@@ -104,24 +112,40 @@ export const Footer: React.FC = () => {
               MAISON &amp; CARE
             </span>
             <ul className="space-y-2 text-xs text-[#4F4B43]">
+              {footerPages.length > 0 ? (
+                footerPages.map((page) => (
+                  <li key={page.id}>
+                    <button
+                      onClick={() => handlePageClick(page.slug)}
+                      className="hover:text-black transition-colors text-left"
+                    >
+                      {page.navLabel || page.title}
+                    </button>
+                  </li>
+                ))
+              ) : (
+                <>
+                  <li>
+                    <button onClick={() => handlePageClick('about')} className="hover:text-black transition-colors">
+                      About The Maison
+                    </button>
+                  </li>
+                  <li>
+                    <button onClick={() => handlePageClick('shipping')} className="hover:text-black transition-colors">
+                      White-Glove Courier Transit
+                    </button>
+                  </li>
+                  <li>
+                    <button onClick={() => handlePageClick('returns')} className="hover:text-black transition-colors">
+                      Garment Lifetime Preservation
+                    </button>
+                  </li>
+                </>
+              )}
               <li>
-                <a href="#manifesto-section" className="hover:text-black transition-colors">
-                  Atelier &amp; Bespoke
-                </a>
-              </li>
-              <li>
-                <span className="text-[#555]">Boutiques &amp; Salons Privés</span>
-              </li>
-              <li>
-                <button onClick={() => setIsTrackingOpen(true)} className="hover:text-black transition-colors">
+                <button onClick={() => setIsTrackingOpen(true)} className="hover:text-black text-[#8C3A27] font-semibold transition-colors">
                   Track Consignment
                 </button>
-              </li>
-              <li>
-                <span className="text-[#555]">White-Glove Courier Transit</span>
-              </li>
-              <li>
-                <span className="text-[#555]">Garment Lifetime Preservation</span>
               </li>
             </ul>
           </div>
@@ -129,10 +153,10 @@ export const Footer: React.FC = () => {
           {/* Gazette Privée Newsletter (3 cols) */}
           <div className="lg:col-span-3 space-y-3">
             <span className="text-[10px] font-mono tracking-widest uppercase text-[#757067] block">
-              THE GAZETTE PRIVÉE
+              {settings.footerGazetteTitle || 'THE GAZETTE PRIVÉE'}
             </span>
             <p className="text-xs text-[#635F56] font-light leading-relaxed">
-              Receive private preview invitations, seasonal folios, and numbered atelier releases.
+              {settings.footerGazetteText || 'Receive private preview invitations, seasonal folios, and numbered atelier releases.'}
             </p>
 
             <form onSubmit={handleSubscribe} className="space-y-2 pt-1">
@@ -164,17 +188,11 @@ export const Footer: React.FC = () => {
         {/* Legal & Cities Footnote */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-[10px] font-mono uppercase tracking-widest text-[#7E7970]">
           <div>
-            &copy; 2026 {settings.storeName} &bull; ALL RIGHTS RESERVED
+            {settings.footerCopyright || `© 2026 ${settings.storeName} • ALL RIGHTS RESERVED`}
           </div>
 
           <div className="flex items-center gap-4 text-[#8A847A]">
-            <span>PARIS</span>
-            <span>&bull;</span>
-            <span>NEW YORK</span>
-            <span>&bull;</span>
-            <span>TOKYO</span>
-            <span>&bull;</span>
-            <span>LONDON</span>
+            <span>{settings.footerCities || 'PARIS • NEW YORK • TOKYO • LONDON'}</span>
           </div>
         </div>
       </div>

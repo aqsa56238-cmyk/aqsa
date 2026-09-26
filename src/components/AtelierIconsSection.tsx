@@ -21,14 +21,14 @@ export const AtelierIconsSection: React.FC = () => {
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
           <div>
             <span className="text-[11px] font-mono tracking-[0.2em] uppercase text-[#736E66] block mb-2">
-              PERMANENT COLLECTION
+              {settings.iconsKicker || 'PERMANENT COLLECTION'}
             </span>
             <h2 className="font-serif text-3xl sm:text-4xl text-[#141413] font-light">
-              Atelier Icons
+              {settings.iconsTitle || 'Atelier Icons'}
             </h2>
           </div>
           <p className="text-xs text-[#706B62] max-w-sm font-light leading-relaxed self-start md:self-end">
-            Pieces that transcend seasonal cadences. Reissued annually in strictly numbered editions.
+            {settings.iconsSubtitle || 'Pieces that transcend seasonal cadences. Reissued annually in strictly numbered editions.'}
           </p>
         </div>
 

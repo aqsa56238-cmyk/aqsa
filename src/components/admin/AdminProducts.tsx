@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useStore } from '../../context/StoreContext';
 import { Product } from '../../types';
-import { Plus, Edit2, Trash2, Copy, Search, Eye, EyeOff, Check, X, Star } from 'lucide-react';
+import { Plus, Edit2, Trash2, Copy, Search, Eye, EyeOff, Check, X, Star, Cloud } from 'lucide-react';
+import { CloudinaryUploader } from './CloudinaryUploader';
 
 export const AdminProducts: React.FC = () => {
   const {
@@ -514,14 +515,31 @@ export const AdminProducts: React.FC = () => {
                 </div>
               </div>
 
-              {/* Images */}
+              {/* Images with Cloudinary Integration */}
               <div>
-                <label className="text-[11px] font-mono uppercase text-[#666] block mb-1">
-                  Product Image URLs
-                </label>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="text-[11px] font-mono uppercase text-[#666] block">
+                    Product Image Gallery
+                  </label>
+                  <span className="text-[10px] font-mono text-[#295438] bg-[#EAF3EC] px-2 py-0.5 font-semibold">
+                    Cloudinary CDN Active (kkroq7e1)
+                  </span>
+                </div>
+
+                {/* Cloudinary Drag & Drop Uploader */}
+                <div className="mb-3">
+                  <CloudinaryUploader
+                    folder="vendome_store/products"
+                    label="Upload Silhouette Image to Cloudinary (kkroq7e1)"
+                    onUploadSuccess={(url) => {
+                      setFormData(prev => ({ ...prev, images: [...prev.images, url] }));
+                    }}
+                  />
+                </div>
+
                 <div className="flex flex-wrap gap-3 mb-2">
                   {formData.images.map((img, i) => (
-                    <div key={i} className="relative w-16 h-20 border bg-white overflow-hidden">
+                    <div key={i} className="relative w-16 h-20 border bg-white overflow-hidden group">
                       <img src={img} alt="Preview" className="w-full h-full object-cover" />
                       <button
                         type="button"
@@ -530,6 +548,11 @@ export const AdminProducts: React.FC = () => {
                       >
                         &times;
                       </button>
+                      {img.includes('cloudinary.com') && (
+                        <div className="absolute bottom-0 inset-x-0 bg-[#295438]/90 text-[8px] font-mono text-white text-center py-0.5">
+                          CDN
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -538,11 +561,11 @@ export const AdminProducts: React.FC = () => {
                     type="text"
                     value={newImageInput}
                     onChange={(e) => setNewImageInput(e.target.value)}
-                    placeholder="Image URL or preset asset path"
+                    placeholder="Or paste external image URL"
                     className="flex-1 px-2 py-1 bg-white border text-xs font-mono"
                   />
                   <button type="button" onClick={handleAddImage} className="px-3 py-1 bg-[#222] text-white text-xs font-mono">
-                    Add Image
+                    Add URL
                   </button>
                 </div>
               </div>

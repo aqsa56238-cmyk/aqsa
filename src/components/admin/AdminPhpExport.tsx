@@ -4,7 +4,7 @@ import { Database, FileCode, Copy, Check, Download, Server, Terminal, Shield } f
 
 export const AdminPhpExport: React.FC = () => {
   const { products, categories, orders, settings } = useStore();
-  const [activeFile, setActiveFile] = useState<'sql' | 'database_php' | 'auth_php' | 'dashboard_php' | 'products_php' | 'checkout_php'>('sql');
+  const [activeFile, setActiveFile] = useState<'sql' | 'database_php' | 'auth_php' | 'cloudinary_php' | 'dashboard_php' | 'products_php' | 'checkout_php'>('sql');
   const [copied, setCopied] = useState(false);
 
   // Generate dynamic database.sql based on current store state
@@ -227,6 +227,79 @@ class Auth {
 }
 `;
 
+  const cloudinaryPhp = `<?php
+/**
+ * Vendôme Éditions - Cloudinary Media Integration Class
+ * Cloud Name: kkroq7e1
+ * API Key: 246794876664153
+ */
+
+declare(strict_types=1);
+
+class CloudinaryService {
+    private const CLOUD_NAME = 'kkroq7e1';
+    private const API_KEY    = '246794876664153';
+    private const API_SECRET = 'fvm7_tMbabv6PgDAd4MCVEiIn10';
+
+    /**
+     * Upload an image file to Cloudinary with secure signature
+     */
+    public static function uploadImage(string $filePath, string $folder = 'vendome_store'): array {
+        $timestamp = time();
+        $paramsToSign = [
+            'folder'    => $folder,
+            'timestamp' => $timestamp,
+        ];
+        ksort($paramsToSign);
+
+        // Build signature string
+        $signString = '';
+        foreach ($paramsToSign as $k => $v) {
+            $signString .= "{$k}={$v}&";
+        }
+        $signString = rtrim($signString, '&') . self::API_SECRET;
+        $signature  = sha1($signString);
+
+        // Prepare multipart cURL payload
+        $postData = [
+            'file'      => new CURLFile($filePath),
+            'api_key'   => self::API_KEY,
+            'timestamp' => $timestamp,
+            'signature' => $signature,
+            'folder'    => $folder
+        ];
+
+        $ch = curl_init('https://api.cloudinary.com/v1_1/' . self::CLOUD_NAME . '/image/upload');
+        curl_setopt_array($ch, [
+            CURLOPT_POST           => true,
+            CURLOPT_POSTFIELDS     => $postData,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_SSL_VERIFYPEER => true
+        ]);
+
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        $json = json_decode((string)$response, true);
+        if ($httpCode === 200 && isset($json['secure_url'])) {
+            return [
+                'success'   => true,
+                'url'       => $json['secure_url'],
+                'public_id' => $json['public_id'],
+                'width'     => $json['width'],
+                'height'    => $json['height']
+            ];
+        }
+
+        return [
+            'success' => false,
+            'error'   => $json['error']['message'] ?? 'Cloudinary upload failed'
+        ];
+    }
+}
+`;
+
   const dashboardPhp = `<?php
 /**
  * Vendôme Éditions - Admin Dashboard (PHP / MySQL / Chart.js)
@@ -434,6 +507,8 @@ try {
         return databasePhp;
       case 'auth_php':
         return authPhp;
+      case 'cloudinary_php':
+        return cloudinaryPhp;
       case 'dashboard_php':
         return dashboardPhp;
       case 'products_php':
@@ -556,6 +631,16 @@ try {
         >
           <FileCode className="w-3.5 h-3.5" />
           <span>includes/auth.php</span>
+        </button>
+
+        <button
+          onClick={() => setActiveFile('cloudinary_php')}
+          className={`px-4 py-2 flex items-center gap-1.5 border-b-2 font-medium transition-colors ${
+            activeFile === 'cloudinary_php' ? 'border-[#1C1B19] text-black bg-white' : 'border-transparent text-[#777] hover:text-black'
+          }`}
+        >
+          <FileCode className="w-3.5 h-3.5 text-[#295438]" />
+          <span>includes/cloudinary.php (kkroq7e1)</span>
         </button>
 
         <button
